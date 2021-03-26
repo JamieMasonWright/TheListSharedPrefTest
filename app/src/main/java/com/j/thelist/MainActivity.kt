@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity()
 {
 
 	private lateinit var toDoListRecyclerView: RecyclerView
+	val listDataManage: ListDataManager =  ListDataManager(this)
+
 	override fun onCreate(savedInstanceState: Bundle?)
 	{
 		super.onCreate(savedInstanceState)
