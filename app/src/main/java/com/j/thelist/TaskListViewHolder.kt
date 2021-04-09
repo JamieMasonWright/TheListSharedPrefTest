@@ -6,6 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 
 class TaskListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)  {
 
-    val taskTextView = itemView?.findViewById<TextView>(R.id.textview_task)
+    val taskTextView = itemView.findViewById<TextView>(R.id.textview_task)
 
 }
