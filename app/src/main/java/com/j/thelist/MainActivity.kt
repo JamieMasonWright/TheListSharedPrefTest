@@ -13,37 +13,25 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity(), ToDoListAdapter.TodoListClickListener
-{
+class MainActivity : AppCompatActivity(), ToDoListFragment.OnFragmentInteractionListener {
 
-	private lateinit var toDoListRecyclerView: RecyclerView
-	private val listDataManager: ListDataManager =  ListDataManager(this)
+	private var todoListFragment = ToDoListFragment.newInstance()
 
-
-
-	companion object{
+	companion object {
 		const val INTENT_LIST_KEY = "list"
 		const val LIST_DETAIL_REQUEST_CODE = 123
 	}
 
-	override fun onCreate(savedInstanceState: Bundle?)
-	{
+	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
-		setSupportActionBar(findViewById(R.id.toolbar))
-
-		val lists = listDataManager.readLists()
-		toDoListRecyclerView = findViewById(R.id.list_recyclerView)
-		toDoListRecyclerView.layoutManager = LinearLayoutManager(this)
-		toDoListRecyclerView.adapter = ToDoListAdapter(lists, this)
 
 		findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
-			showCreateTodListDialog()
+			showCreateTodoListDialog()
 		}
 	}
 
-	override fun onCreateOptionsMenu(menu: Menu): Boolean
-	{
+	override fun onCreateOptionsMenu(menu: Menu): Boolean {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		menuInflater.inflate(R.menu.menu_main, menu)
 		return true
@@ -51,64 +39,53 @@ class MainActivity : AppCompatActivity(), ToDoListAdapter.TodoListClickListener
 
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 		super.onActivityResult(requestCode, resultCode, data)
-		if(requestCode == LIST_DETAIL_REQUEST_CODE){
+		if (requestCode == LIST_DETAIL_REQUEST_CODE) {
 			data?.let {
 				val list = data.getParcelableExtra<TaskList>(INTENT_LIST_KEY)!!
-				listDataManager.saveList(list)
-				updateLists()
+				todoListFragment.saveList(list)
 			}
 		}
 	}
 
-	private fun updateLists() {
-		val lists = listDataManager.readLists()
-		toDoListRecyclerView.adapter = ToDoListAdapter(lists, this)
-	}
-
-	override fun onOptionsItemSelected(item: MenuItem): Boolean
-	{
+	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		return when (item.itemId)
-		{
+		return when (item.itemId) {
 			R.id.action_settings -> true
 			else -> super.onOptionsItemSelected(item)
 		}
 	}
 
-	private fun showCreateTodListDialog(){
+	private fun showCreateTodoListDialog() {
+
 		val dialogTitle = getString(R.string.name_of_list)
 		val positiveButtonTitle = getString(R.string.create)
 		val myDialog = AlertDialog.Builder(this)
-		val toDoListEditText = EditText(this)
-		toDoListEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
-		myDialog.setTitle(dialogTitle)
-		myDialog.setView(toDoListEditText)
+		val todoTitleEditText = EditText(this)
+		todoTitleEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
-		myDialog.setPositiveButton(positiveButtonTitle){
-			dialog, _ ->
-			val adapter = toDoListRecyclerView.adapter as ToDoListAdapter
-			val list = TaskList(toDoListEditText.text.toString())
-			listDataManager.saveList(list)
-			adapter.addList(list)
+		myDialog.setTitle(dialogTitle)
+		myDialog.setView(todoTitleEditText)
+
+		myDialog.setPositiveButton(positiveButtonTitle) {
+				dialog, _ ->
+			val list = TaskList(todoTitleEditText.text.toString())
+			todoListFragment.addList(list)
 			dialog.dismiss()
 			showTaskListItems(list)
 		}
 		myDialog.create().show()
 	}
 
-	private fun showTaskListItems(list: TaskList){
+	private fun showTaskListItems(list: TaskList) {
 		val taskListItem = Intent(this, DetailActivity::class.java)
 		taskListItem.putExtra(INTENT_LIST_KEY, list)
 		startActivityForResult(taskListItem, LIST_DETAIL_REQUEST_CODE)
-
 	}
 
-	override fun listItemClicked(list: TaskList)
-	{
-		showTaskListItems(list
-		)
-
+	override fun onTodoListClicked(list: TaskList) {
+		showTaskListItems(list)
 	}
+
 }

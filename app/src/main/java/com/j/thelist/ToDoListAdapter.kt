@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class ToDoListAdapter(private val lists: ArrayList<TaskList>, private val clickListener: TodoListClickListener) : RecyclerView.Adapter<ToDoListViewHolder>() {
+class ToDoListAdapter(private val lists: ArrayList<TaskList>, val clickListener: TodoListClickListener) : RecyclerView.Adapter<ToDoListViewHolder>() {
 
     interface TodoListClickListener {
         fun listItemClicked(list: TaskList)
@@ -12,12 +12,13 @@ class ToDoListAdapter(private val lists: ArrayList<TaskList>, private val clickL
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.to_do_list_view_holder, parent, false)
+            .inflate(R.layout.to_do_list_view_holder, parent, false)
         return ToDoListViewHolder(view)
     }
 
-    override fun getItemCount(): Int = lists.size
-
+    override fun getItemCount(): Int {
+        return lists.size
+    }
 
     override fun onBindViewHolder(holder: ToDoListViewHolder, position: Int) {
 
